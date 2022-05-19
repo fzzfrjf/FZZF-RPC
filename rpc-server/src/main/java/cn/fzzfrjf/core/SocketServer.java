@@ -1,6 +1,7 @@
 package cn.fzzfrjf.core;
 
 
+import cn.fzzfrjf.service.ServerPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +14,11 @@ public class SocketServer implements CommonServer{
 
     private final ExecutorService threadPool;
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
+    private final ServerPublisher serverPublisher;
 
-    public SocketServer(){
+
+    public SocketServer(ServerPublisher serverPublisher){
+        this.serverPublisher = serverPublisher;
         int corePoolSize = 5;
         int maximumPoolSize = 50;
         int keepAliveTime = 60;
@@ -22,17 +26,19 @@ public class SocketServer implements CommonServer{
         threadPool = new ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime, TimeUnit.SECONDS,workQueue,Executors.defaultThreadFactory());
     }
 
+
     @Override
-    public void register(Object service, int port) {
+    public void start(int port){
         try(ServerSocket serverSocket = new ServerSocket(port)){
-            logger.info("服务器正在启动中.....");
-            Socket socket ;
-            while( (socket = serverSocket.accept()) != null){
+            logger.info("服务器成功启动。。。。");
+            Socket socket;
+            while((socket = serverSocket.accept()) != null){
                 logger.info("连接成功，客户端ip为:" + socket.getInetAddress());
-                threadPool.execute(new WorkThread(service,socket));
+                threadPool.execute(new RequestHandlerThread(new RequestHandler(),serverPublisher,socket));
             }
+            threadPool.shutdown();
         }catch (IOException e){
-            logger.error("连接时有错误发生：{}",e);
+            logger.error("服务器启动时发生错误：",e);
         }
     }
 }

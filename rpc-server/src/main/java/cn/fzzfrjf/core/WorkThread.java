@@ -29,7 +29,7 @@ public class WorkThread implements Runnable{
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
             Method method = service.getClass().getMethod(rpcRequest.getMethodName(),rpcRequest.getParameterTypes());
             Object result = method.invoke(service,rpcRequest.getParameters());
-            objectOutputStream.writeObject(new RpcResponse().success(result,rpcRequest.getRequestId()));
+            objectOutputStream.writeObject(RpcResponse.success(result,rpcRequest.getRequestId()));
             objectOutputStream.flush();
         }catch (IOException | ClassNotFoundException | InvocationTargetException |NoSuchMethodException | IllegalAccessException e){
             logger.error("调用或发送时有错误发生：",e);
