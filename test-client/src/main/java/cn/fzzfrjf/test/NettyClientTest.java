@@ -1,21 +1,22 @@
 package cn.fzzfrjf.test;
 
 import cn.fzzfrjf.core.ClientProxy;
-import cn.fzzfrjf.core.SocketClient;
+import cn.fzzfrjf.core.NettyClient;
 import cn.fzzfrjf.entity.ByeService;
 import cn.fzzfrjf.entity.HelloService;
 import cn.fzzfrjf.entity.RpcObject;
+import cn.fzzfrjf.serializer.ProtobufSerializer;
 
-public class SocketClientTest {
+public class NettyClientTest {
     public static void main(String[] args) {
-        SocketClient socketClient = new SocketClient();
-        ClientProxy proxy = new ClientProxy(socketClient,"127.0.0.1",9000);
+        NettyClient client = new NettyClient(new ProtobufSerializer());
+        ClientProxy proxy = new ClientProxy(client,"127.0.0.1",10000);
         HelloService helloService = (HelloService)proxy.getProxy(HelloService.class);
         ByeService byeService = (ByeService) proxy.getProxy(ByeService.class);
-        RpcObject rpcObject = new RpcObject(2,"This is SocketClient!");
+        RpcObject rpcObject = new RpcObject(2,"This is NettyClient!");
         String s = helloService.sayHello(rpcObject);
-        String b = byeService.bye(rpcObject);
         System.out.println(s);
-        System.out.println(b);
+        String a = byeService.bye(rpcObject);
+        System.out.println(a);
     }
 }

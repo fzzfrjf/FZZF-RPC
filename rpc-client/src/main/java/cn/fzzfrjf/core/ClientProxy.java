@@ -33,13 +33,14 @@ public class ClientProxy implements InvocationHandler {
                 .parameterTypes(method.getParameterTypes())
                 .parameters(args)
                 .build();
-        CompletableFuture<RpcResponse> result = null;
-        if(client instanceof SocketClient){
-            return ((RpcResponse) client.sendRequest(rpcRequest,host,port)).getData();
-        }
-        if(client instanceof NettyClient){
-            result = (CompletableFuture<RpcResponse>) client.sendRequest(rpcRequest,host,port);
-        }
-        return result.get();
+        //CompletableFuture<RpcResponse> result = null;
+//        if(client instanceof SocketClient){
+//            return ((RpcResponse) client.sendRequest(rpcRequest,host,port)).getData();
+//        }
+//        if(client instanceof NettyClient){
+//            result = (CompletableFuture<RpcResponse>) client.sendRequest(rpcRequest,host,port);
+//        }
+//      return result.get();
+        return ((RpcResponse) client.sendRequest(rpcRequest,host,port)).getData();
     }
 }
