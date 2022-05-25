@@ -12,7 +12,8 @@ public enum RpcError {
     SERVICE_NOT_FOUND("未能找到服务"),
     UNKNOWN_PROTOCOL("不识别的协议包"),
     UNKNOWN_PACKAGE_TYPE("不识别的数据包"),
-    CLIENT_CONNECT_SERVER_FAILURE("客户端连接服务器失败");
+    CLIENT_CONNECT_SERVER_FAILURE("客户端连接服务器失败"),
+    COMPLETABLE_ERROR("异步调用中出现错误");
 
     private String message;
 }
