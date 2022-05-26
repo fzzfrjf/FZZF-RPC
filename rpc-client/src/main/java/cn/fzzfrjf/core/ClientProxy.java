@@ -12,13 +12,9 @@ import java.util.concurrent.CompletableFuture;
 public class ClientProxy implements InvocationHandler {
 
     private CommonClient client;
-    private String host;
-    private int port;
 
-    public ClientProxy(CommonClient client,String host,int port){
+    public ClientProxy(CommonClient client){
         this.client = client;
-        this.host = host;
-        this.port = port;
     }
 
     public Object getProxy(Class<?> clazz){
@@ -35,10 +31,10 @@ public class ClientProxy implements InvocationHandler {
                 .build();
         CompletableFuture<RpcResponse> result = null;
         if(client instanceof SocketClient){
-            return ((RpcResponse) client.sendRequest(rpcRequest,host,port)).getData();
+            return ((RpcResponse) client.sendRequest(rpcRequest)).getData();
         }
         if(client instanceof NettyClient){
-            result = (CompletableFuture<RpcResponse>) client.sendRequest(rpcRequest,host,port);
+            result = (CompletableFuture<RpcResponse>) client.sendRequest(rpcRequest);
         }
       return result.get().getData();
     }

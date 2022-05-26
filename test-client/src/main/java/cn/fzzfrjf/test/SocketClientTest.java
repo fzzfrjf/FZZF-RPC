@@ -9,7 +9,7 @@ import cn.fzzfrjf.entity.RpcObject;
 public class SocketClientTest {
     public static void main(String[] args) {
         SocketClient socketClient = new SocketClient();
-        ClientProxy proxy = new ClientProxy(socketClient,"127.0.0.1",9000);
+        ClientProxy proxy = new ClientProxy(socketClient);
         HelloService helloService = (HelloService)proxy.getProxy(HelloService.class);
         ByeService byeService = (ByeService) proxy.getProxy(ByeService.class);
         RpcObject rpcObject = new RpcObject(2,"This is SocketClient!");

@@ -2,6 +2,7 @@ package cn.fzzfrjf.core;
 
 import cn.fzzfrjf.entity.RpcRequest;
 import cn.fzzfrjf.entity.RpcResponse;
+import cn.fzzfrjf.loadbalance.RoundRobinLoadBalance;
 import cn.fzzfrjf.serializer.CommonSerializer;
 import cn.fzzfrjf.utils.SingletonFactory;
 import io.netty.channel.Channel;
@@ -18,14 +19,17 @@ public class NettyClient implements CommonClient{
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
     private final CommonSerializer serializer;
     private final UnprocessedRequest unprocessedRequest = SingletonFactory.getInstance(UnprocessedRequest.class);
+    private final RegisterDiscovery registerDiscovery;
     public NettyClient(CommonSerializer serializer){
         this.serializer = serializer;
+        registerDiscovery = new NacosRegisterDiscovery(new RoundRobinLoadBalance());
     }
 
 
     @Override
-    public CompletableFuture<RpcResponse> sendRequest(RpcRequest rpcRequest, String host, int port) {
-        Channel channel = ChannelProvider.get(new InetSocketAddress(host,port),serializer);
+    public CompletableFuture<RpcResponse> sendRequest(RpcRequest rpcRequest) {
+        InetSocketAddress inetSocketAddress = registerDiscovery.lookupService(rpcRequest.getInterfaceName());
+        Channel channel = ChannelProvider.get(inetSocketAddress,serializer);
         CompletableFuture<RpcResponse> future = new CompletableFuture<>();
         unprocessedRequest.put(rpcRequest.getRequestId(),future);
         channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future1 -> {

@@ -1,5 +1,9 @@
 package cn.fzzfrjf.core;
 
+import java.util.List;
+
 public interface CommonServer {
-    public void start(int port);
+    public void start();
+
+    void publishService(List<Object> services);
 }

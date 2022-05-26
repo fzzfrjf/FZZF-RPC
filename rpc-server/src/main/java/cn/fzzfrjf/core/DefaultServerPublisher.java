@@ -16,18 +16,15 @@ public class DefaultServerPublisher implements ServerPublisher {
     private final ConcurrentHashMap<String,Object> serviceMap = new ConcurrentHashMap<>();
     private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     @Override
-    public synchronized <T> void publishService(T service) {
+    public synchronized <T> void addService(T service) {
         String serviceName = service.getClass().getCanonicalName();
         if(serviceMap.containsKey(serviceName)) return;
         registeredService.add(serviceName);
         Class<?>[] interfaces = service.getClass().getInterfaces();
-        if(interfaces.length == 0){
-            throw new RpcException(RpcError.SERVICE_NOT_REGISTERED);
+        for(Class<?> anInterface : interfaces) {
+            serviceMap.put(anInterface.getCanonicalName(), service);
+            logger.info("向接口：{}注册服务：{}", anInterface, serviceName);
         }
-        for (Class<?> anInterface : interfaces) {
-            serviceMap.put(anInterface.getCanonicalName(),service);
-        }
-        logger.info("向接口：{}注册服务：{}",interfaces,serviceName);
     }
 
     @Override

@@ -9,15 +9,18 @@ import cn.fzzfrjf.service.ByeServiceImpl;
 import cn.fzzfrjf.service.HelloServiceImpl;
 import cn.fzzfrjf.service.ServerPublisher;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NettyServerTest {
 
     public static void main(String[] args) {
-        ServerPublisher serverPublisher = new DefaultServerPublisher();
         HelloService helloService = new HelloServiceImpl();
         ByeService byeService = new ByeServiceImpl();
-        serverPublisher.publishService(helloService);
-        serverPublisher.publishService(byeService);
-        NettyServer server = new NettyServer(serverPublisher,new ProtobufSerializer());
-        server.start(10000);
+        NettyServer server = new NettyServer(new ProtobufSerializer(),"127.0.0.1",9999);
+        List<Object> services = new ArrayList<>();
+        services.add(helloService);
+        services.add(byeService);
+        server.publishService(services);
     }
 }

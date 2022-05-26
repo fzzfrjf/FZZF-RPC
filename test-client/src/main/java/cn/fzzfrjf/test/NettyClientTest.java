@@ -10,7 +10,7 @@ import cn.fzzfrjf.serializer.ProtobufSerializer;
 public class NettyClientTest {
     public static void main(String[] args) {
         NettyClient client = new NettyClient(new ProtobufSerializer());
-        ClientProxy proxy = new ClientProxy(client,"127.0.0.1",10000);
+        ClientProxy proxy = new ClientProxy(client);
         HelloService helloService = (HelloService)proxy.getProxy(HelloService.class);
         ByeService byeService = (ByeService) proxy.getProxy(ByeService.class);
         RpcObject rpcObject = new RpcObject(2,"This is NettyClient!");

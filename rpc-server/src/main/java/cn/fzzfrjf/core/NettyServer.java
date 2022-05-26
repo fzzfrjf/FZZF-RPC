@@ -4,7 +4,10 @@ import cn.fzzfrjf.codec.MyDecoder;
 import cn.fzzfrjf.codec.MyEncoder;
 import cn.fzzfrjf.serializer.CommonSerializer;
 import cn.fzzfrjf.serializer.ProtobufSerializer;
+import cn.fzzfrjf.service.RegisterService;
 import cn.fzzfrjf.service.ServerPublisher;
+import cn.fzzfrjf.utils.NacosUtils;
+import cn.fzzfrjf.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -15,18 +18,27 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+import java.util.List;
+
 
 public class NettyServer implements CommonServer{
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
     private final ServerPublisher serverPublisher;
     private final CommonSerializer serializer;
-    public NettyServer(ServerPublisher serverPublisher,CommonSerializer serializer){
-        this.serverPublisher = serverPublisher;
+    private final RegisterService registerService;
+    private final String host;
+    private final int port;
+    public NettyServer(CommonSerializer serializer,String host,int port){
+        this.serverPublisher = SingletonFactory.getInstance(DefaultServerPublisher.class);
         this.serializer = serializer;
+        registerService = new NacosRegisterService();
+        this.host = host;
+        this.port = port;
     }
     @Override
-    public void start(int port) {
+    public void start() {
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup();
         try{
@@ -46,7 +58,7 @@ public class NettyServer implements CommonServer{
                                     .addLast(new NettyServerHandler(serverPublisher));
                         }
                     });
-            ChannelFuture future = serverBootstrap.bind(port).sync();
+            ChannelFuture future = serverBootstrap.bind(host,port).sync();
             future.channel().closeFuture().sync();
         }catch (InterruptedException e){
             logger.error("启动服务时发生错误");
@@ -55,5 +67,17 @@ public class NettyServer implements CommonServer{
             boss.shutdownGracefully();
             worker.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void publishService(List<Object> services) {
+        for(Object service : services){
+            serverPublisher.addService(service);
+            Class<?>[] interfaces = service.getClass().getInterfaces();
+            for (Class<?> anInterface : interfaces) {
+                registerService.registry(anInterface.getCanonicalName(),new InetSocketAddress(host,port));
+            }
+        }
+        start();
     }
 }
