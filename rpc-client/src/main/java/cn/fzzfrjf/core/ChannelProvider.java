@@ -5,16 +5,18 @@ import cn.fzzfrjf.codec.MyEncoder;
 import cn.fzzfrjf.enumeration.RpcError;
 import cn.fzzfrjf.exception.RpcException;
 import cn.fzzfrjf.serializer.CommonSerializer;
-import cn.fzzfrjf.serializer.ProtobufSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +26,7 @@ public class ChannelProvider {
     private static final int MAX_RETRY_NUMBER = 5;
     private static Channel channel = null;
     private static final Logger logger = LoggerFactory.getLogger(ChannelProvider.class);
+    public static final Map<String,Channel> channelMap = new ConcurrentHashMap<>();
 
 
 
@@ -41,11 +44,21 @@ public class ChannelProvider {
 
 
     public static Channel get(InetSocketAddress inetSocketAddress, CommonSerializer serializer){
+        String key = inetSocketAddress.toString() + serializer.getSerializerCode();
+        if(channelMap.containsKey(key)){
+            Channel oneChannel = channelMap.get(key);
+            if(oneChannel != null || oneChannel.isActive()){
+                return oneChannel;
+            }else{
+                channelMap.remove(key);
+            }
+        }
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
                 pipeline.addLast(new MyEncoder(serializer))
+                        .addLast(new IdleStateHandler(0,5,0,TimeUnit.SECONDS))
                         .addLast(new MyDecoder())
                         .addLast(new NettyClientHandler());
             }
@@ -54,6 +67,7 @@ public class ChannelProvider {
         try {
             connect(bootstrap,inetSocketAddress,countDownLatch);
             countDownLatch.await();
+            channelMap.put(key,channel);
         } catch (InterruptedException e) {
             logger.error("获取channel时发生错误");
         }
@@ -81,6 +95,5 @@ public class ChannelProvider {
             int delay = 1 << number ;
             bootstrap.config().group().schedule(() -> connect(bootstrap,inetSocketAddress,retry - 1,countDownLatch),delay, TimeUnit.SECONDS);
         });
-
     }
 }

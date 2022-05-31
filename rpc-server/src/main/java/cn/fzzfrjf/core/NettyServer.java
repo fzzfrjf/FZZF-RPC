@@ -7,6 +7,7 @@ import cn.fzzfrjf.serializer.ProtobufSerializer;
 import cn.fzzfrjf.service.RegisterService;
 import cn.fzzfrjf.service.ServerPublisher;
 import cn.fzzfrjf.utils.NacosUtils;
+import cn.fzzfrjf.utils.ShutdownHook;
 import cn.fzzfrjf.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -15,11 +16,13 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 public class NettyServer implements CommonServer{
@@ -39,6 +42,7 @@ public class NettyServer implements CommonServer{
     }
     @Override
     public void start() {
+        ShutdownHook.getShutdownHook().addClearHook();
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup();
         try{
@@ -53,7 +57,8 @@ public class NettyServer implements CommonServer{
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new MyEncoder(serializer))
+                            pipeline.addLast(new IdleStateHandler(30,0,0, TimeUnit.SECONDS))
+                                    .addLast(new MyEncoder(serializer))
                                     .addLast(new MyDecoder())
                                     .addLast(new NettyServerHandler(serverPublisher));
                         }
