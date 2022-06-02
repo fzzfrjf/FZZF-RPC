@@ -3,12 +3,7 @@ package cn.fzzfrjf.core;
 import cn.fzzfrjf.codec.MyDecoder;
 import cn.fzzfrjf.codec.MyEncoder;
 import cn.fzzfrjf.serializer.CommonSerializer;
-import cn.fzzfrjf.serializer.ProtobufSerializer;
-import cn.fzzfrjf.service.RegisterService;
-import cn.fzzfrjf.service.ServerPublisher;
-import cn.fzzfrjf.utils.NacosUtils;
 import cn.fzzfrjf.utils.ShutdownHook;
-import cn.fzzfrjf.utils.SingletonFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -20,25 +15,20 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-public class NettyServer implements CommonServer{
+public class NettyServer extends AbstractServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
-    private final ServerPublisher serverPublisher;
     private final CommonSerializer serializer;
-    private final RegisterService registerService;
-    private final String host;
-    private final int port;
     public NettyServer(CommonSerializer serializer,String host,int port){
-        this.serverPublisher = SingletonFactory.getInstance(DefaultServerPublisher.class);
+        serverPublisher = new DefaultServerPublisher();
         this.serializer = serializer;
         registerService = new NacosRegisterService();
         this.host = host;
         this.port = port;
+        scanServices();
     }
     @Override
     public void start() {
@@ -72,17 +62,5 @@ public class NettyServer implements CommonServer{
             boss.shutdownGracefully();
             worker.shutdownGracefully();
         }
-    }
-
-    @Override
-    public void publishService(List<Object> services) {
-        for(Object service : services){
-            serverPublisher.addService(service);
-            Class<?>[] interfaces = service.getClass().getInterfaces();
-            for (Class<?> anInterface : interfaces) {
-                registerService.registry(anInterface.getCanonicalName(),new InetSocketAddress(host,port));
-            }
-        }
-        start();
     }
 }

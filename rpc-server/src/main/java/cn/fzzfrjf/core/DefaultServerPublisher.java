@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultServerPublisher implements ServerPublisher {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultServerPublisher.class);
-    private final ConcurrentHashMap<String,Object> serviceMap = new ConcurrentHashMap<>();
-    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
+    private static final ConcurrentHashMap<String,Object> serviceMap = new ConcurrentHashMap<>();
+    private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
     @Override
     public synchronized <T> void addService(T service) {
         String serviceName = service.getClass().getCanonicalName();
