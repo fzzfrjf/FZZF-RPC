@@ -28,6 +28,7 @@ public class SocketServer extends AbstractServer{
         int keepAliveTime = 60;
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(100);
         threadPool = new ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime, TimeUnit.SECONDS,workQueue,Executors.defaultThreadFactory());
+        scanServices();
     }
 
 

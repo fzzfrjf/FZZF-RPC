@@ -1,5 +1,7 @@
 package cn.fzzfrjf.loadbalance;
 
+import com.alibaba.nacos.api.naming.pojo.Instance;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,7 +19,7 @@ public class RoundRobinLoadBalance implements LoadBalance{
         return next;
     }
     @Override
-    public <T> T getInstance(List<T> list) {
+    public Instance getInstance(List<Instance> list) {
         int index = getAndIncrement() % list.size();
         return list.get(index);
     }

@@ -33,7 +33,7 @@ public class NettyServer extends AbstractServer {
     @Override
     public void start() {
         ShutdownHook.getShutdownHook().addClearHook();
-        EventLoopGroup boss = new NioEventLoopGroup();
+        EventLoopGroup boss = new NioEventLoopGroup(1);
         EventLoopGroup worker = new NioEventLoopGroup();
         try{
             ServerBootstrap serverBootstrap = new ServerBootstrap();
