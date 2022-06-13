@@ -18,18 +18,45 @@ public final class ExtensionLoader<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(ExtensionLoader.class);
 
+    /**
+     *扩展类存放的地址
+     */
     private static final String SERVICE_DIRECTORY = "META-INF/extensions/";
+    /**
+     *扩展加载器的缓存
+     */
     private static final Map<Class<?>,ExtensionLoader<?>> EXTENSION_LOADER = new ConcurrentHashMap<>();
+    /**
+     *扩展类实例的缓存
+     */
     private static final Map<Class<?>,Object> EXTENSION_INSTANCE = new ConcurrentHashMap<>();
 
 
+    /**
+     *扩展类Class文件
+     */
     private final Class<?> type;
+    /**
+     *扩展类实例持有者Holder的缓存
+     */
     private final Map<String,Holder<Object>> cachedInstances = new ConcurrentHashMap<>();
+    /**
+     *扩展类配置列表缓存
+     */
     private final Holder<Map<String,Class<?>>> cachedClass = new Holder<>();
 
+    /**
+     *构造器指定Class类型
+     */
     public ExtensionLoader(Class<?> type){this.type = type;}
 
-
+    /**
+    * @Description: 根据类型得到扩展加载器
+    * @Param: Class文件
+    * @return: 扩展类型加载器
+    * @Author: fzzfrjf
+    * @Date: 2022/6/13
+    */
     public static <S> ExtensionLoader<S> getExtensionLoader(Class<S> type){
         if(type == null){
             throw new IllegalArgumentException("Extension type should not be null");
@@ -48,6 +75,13 @@ public final class ExtensionLoader<T> {
         return extensionLoader;
     }
 
+    /**
+    * @Description: 获取扩展实例对象
+    * @Param: name 扩展类在配置文件中的名字
+    * @return: 扩展类实例对象
+    * @Author: fzzfrjf
+    * @Date: 2022/6/13
+    */
     public T getExtension(String name){
         if(StringUtil.isBlank(name)){
             throw new IllegalArgumentException("Extension name should not be null or empty");
@@ -69,6 +103,13 @@ public final class ExtensionLoader<T> {
         return (T) instance;
     }
 
+    /**
+    * @Description: 创建对应名字的扩展类对象
+    * @Param: name 扩展类在配置文件中的名字
+    * @return: 扩展类对象
+    * @Author: fzzfrjf
+    * @Date: 2022/6/13
+    */
     private T createExtension(String name){
         Map<String, Class<?>> extensionClasses = getExtensionClasses();
         Class<?> clazz = extensionClasses.get(name);
@@ -88,6 +129,13 @@ public final class ExtensionLoader<T> {
         return instance;
     }
 
+    /**
+    * @Description: 获取当前类型的所有扩展类
+    * @Param: 
+    * @return: 扩展类名字与对应的全类名的Map
+    * @Author: fzzfrjf
+    * @Date: 2022/6/13
+    */
     private Map<String,Class<?>> getExtensionClasses(){
         Map<String, Class<?>> classes = cachedClass.getValue();
         if(classes == null){
@@ -104,7 +152,13 @@ public final class ExtensionLoader<T> {
     }
 
 
-
+    /**
+    * @Description: 获取指定配置文件中所有的配置
+    * @Param: Map<String,Class<?>>
+    * @return: void
+    * @Author: fzzfrjf
+    * @Date: 2022/6/13
+    */
     private void loadDirectory(Map<String,Class<?>> extensionClasses){
         String fileName = ExtensionLoader.SERVICE_DIRECTORY +type.getName();
         try{
@@ -122,6 +176,13 @@ public final class ExtensionLoader<T> {
         }
     }
 
+    /**
+    * @Description: 读取指定配置文件中不同的实例化对象配置并放入缓存
+    * @Param:
+    * @return: void
+    * @Author: fzzfrjf
+    * @Date: 2022/6/13
+    */
     private void loadResource(Map<String,Class<?>> extensionClasses,ClassLoader classLoader,URL url){
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8))){
             String line;
