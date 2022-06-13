@@ -1,0 +1,2 @@
+kryo=cn.fzzfrjf.serializer.kryo.KryoSerializer
+protobuf=cn.fzzfrjf.serializer.protobuf.ProtobufSerializer

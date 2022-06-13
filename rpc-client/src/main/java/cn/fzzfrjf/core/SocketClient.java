@@ -1,7 +1,7 @@
 package cn.fzzfrjf.core;
 
 import cn.fzzfrjf.entity.RpcRequest;
-import cn.fzzfrjf.loadbalance.RoundRobinLoadBalance;
+import cn.fzzfrjf.loadbalance.roundRobin.RoundRobinLoadBalance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,8 +2,9 @@ package cn.fzzfrjf.core;
 
 import cn.fzzfrjf.entity.RpcRequest;
 import cn.fzzfrjf.entity.RpcResponse;
-import cn.fzzfrjf.loadbalance.IpHashLoadBalance;
-import cn.fzzfrjf.loadbalance.RoundRobinLoadBalance;
+import cn.fzzfrjf.extension.ExtensionLoader;
+import cn.fzzfrjf.loadbalance.LoadBalance;
+import cn.fzzfrjf.loadbalance.consistentHash.IpHashLoadBalance;
 import cn.fzzfrjf.serializer.CommonSerializer;
 import cn.fzzfrjf.utils.SingletonFactory;
 import io.netty.channel.Channel;
@@ -11,9 +12,7 @@ import io.netty.channel.ChannelFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -22,9 +21,9 @@ public class NettyClient implements CommonClient{
     private final CommonSerializer serializer;
     private final UnprocessedRequest unprocessedRequest = SingletonFactory.getInstance(UnprocessedRequest.class);
     private final RegisterDiscovery registerDiscovery;
-    public NettyClient(CommonSerializer serializer){
-        this.serializer = serializer;
-        registerDiscovery = new NacosRegisterDiscovery(new IpHashLoadBalance());
+    public NettyClient(){
+        this.serializer = ExtensionLoader.getExtensionLoader(CommonSerializer.class).getExtension("kryo");
+        registerDiscovery = new NacosRegisterDiscovery(ExtensionLoader.getExtensionLoader(LoadBalance.class).getExtension("loadBalance"));
     }
 
 

@@ -80,7 +80,7 @@ public class ChannelProvider {
     private static void connect(Bootstrap bootstrap, InetSocketAddress inetSocketAddress,int retry,CountDownLatch countDownLatch){
         bootstrap.connect(inetSocketAddress).addListener((ChannelFutureListener) future ->{
             if(future.isSuccess()){
-                logger.info("获取channel连接成功,连接到服务器{}：{}",inetSocketAddress.getHostName(),inetSocketAddress.getPort());
+                logger.info("获取channel连接成功,连接到服务器{}：{}",inetSocketAddress.getAddress(),inetSocketAddress.getPort());
                 channel = future.channel();
                 countDownLatch.countDown();
                 return;

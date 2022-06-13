@@ -1,11 +1,12 @@
-package cn.fzzfrjf.loadbalance;
+package cn.fzzfrjf.loadbalance.roundRobin;
 
+import cn.fzzfrjf.loadbalance.LoadBalance;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RoundRobinLoadBalance implements LoadBalance{
+public class RoundRobinLoadBalance implements LoadBalance {
 
     private AtomicInteger atomicInteger = new AtomicInteger(0);
 

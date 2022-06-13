@@ -2,6 +2,7 @@ package cn.fzzfrjf.core;
 
 import cn.fzzfrjf.codec.MyDecoder;
 import cn.fzzfrjf.codec.MyEncoder;
+import cn.fzzfrjf.extension.ExtensionLoader;
 import cn.fzzfrjf.serializer.CommonSerializer;
 import cn.fzzfrjf.utils.ShutdownHook;
 import io.netty.bootstrap.ServerBootstrap;
@@ -22,9 +23,9 @@ public class NettyServer extends AbstractServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
     private final CommonSerializer serializer;
-    public NettyServer(CommonSerializer serializer,String host,int port){
+    public NettyServer(String host,int port){
         serverPublisher = new DefaultServerPublisher();
-        this.serializer = serializer;
+        this.serializer = ExtensionLoader.getExtensionLoader(CommonSerializer.class).getExtension("kryo");
         registerService = new NacosRegisterService();
         this.host = host;
         this.port = port;

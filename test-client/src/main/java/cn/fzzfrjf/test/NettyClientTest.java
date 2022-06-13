@@ -5,11 +5,10 @@ import cn.fzzfrjf.core.NettyClient;
 import cn.fzzfrjf.entity.ByeService;
 import cn.fzzfrjf.entity.HelloService;
 import cn.fzzfrjf.entity.RpcObject;
-import cn.fzzfrjf.serializer.ProtobufSerializer;
 
 public class NettyClientTest {
     public static void main(String[] args) {
-        NettyClient client = new NettyClient(new ProtobufSerializer());
+        NettyClient client = new NettyClient();
         ClientProxy proxy = new ClientProxy(client);
         HelloService helloService = (HelloService)proxy.getProxy(HelloService.class);
         ByeService byeService = (ByeService) proxy.getProxy(ByeService.class);

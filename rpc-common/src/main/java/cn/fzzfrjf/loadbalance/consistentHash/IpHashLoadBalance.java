@@ -1,11 +1,12 @@
-package cn.fzzfrjf.loadbalance;
+package cn.fzzfrjf.loadbalance.consistentHash;
 
+import cn.fzzfrjf.loadbalance.LoadBalance;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class IpHashLoadBalance implements LoadBalance{
+public class IpHashLoadBalance implements LoadBalance {
 
     private String address;
 

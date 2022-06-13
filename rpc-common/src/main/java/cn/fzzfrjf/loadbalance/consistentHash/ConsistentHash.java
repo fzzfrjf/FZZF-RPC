@@ -1,4 +1,4 @@
-package cn.fzzfrjf.loadbalance;
+package cn.fzzfrjf.loadbalance.consistentHash;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 

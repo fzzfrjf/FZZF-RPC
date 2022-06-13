@@ -17,7 +17,8 @@ public enum RpcError {
     CONNECT_REGISTRATION_FAILURE("连接到注册中心失败"),
     REGISTERED_SERVICE_FAILURE("将服务注册到注册中心失败"),
     SERVICE_SCAN_ANNOTATION_NOT_FOUND("未发现ServiceScan注解"),
-    RPC_UNKNOWN_ERROR("出现未知错误");
+    RPC_UNKNOWN_ERROR("出现未知错误"),
+    SERIALIZER_ERROR("序列化时出现错误");
 
     private String message;
 }

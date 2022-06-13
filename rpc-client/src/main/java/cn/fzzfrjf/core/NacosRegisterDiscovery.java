@@ -2,7 +2,7 @@ package cn.fzzfrjf.core;
 
 import cn.fzzfrjf.enumeration.RpcError;
 import cn.fzzfrjf.exception.RpcException;
-import cn.fzzfrjf.loadbalance.IpHashLoadBalance;
+import cn.fzzfrjf.loadbalance.consistentHash.IpHashLoadBalance;
 import cn.fzzfrjf.loadbalance.LoadBalance;
 import cn.fzzfrjf.utils.NacosUtils;
 import com.alibaba.nacos.api.exception.NacosException;

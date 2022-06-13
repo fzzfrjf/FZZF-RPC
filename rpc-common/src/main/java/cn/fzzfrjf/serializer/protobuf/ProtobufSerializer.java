@@ -1,6 +1,7 @@
-package cn.fzzfrjf.serializer;
+package cn.fzzfrjf.serializer.protobuf;
 
 import cn.fzzfrjf.enumeration.SerializerCode;
+import cn.fzzfrjf.serializer.CommonSerializer;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtostuffIOUtil;
 import io.protostuff.Schema;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ProtobufSerializer implements CommonSerializer{
+public class ProtobufSerializer implements CommonSerializer {
 
     private static LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
     private static Map<Class<?>, Schema<?>> schemaCache = new ConcurrentHashMap<>();
